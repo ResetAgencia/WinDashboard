@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Win</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #000;
+            color: white;
+        }
+        #login-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        #login-box img {
+            width: 180px;
+            margin-bottom: 20px;
+        }
+        #login-box h2 {
+            font-weight: 400;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        input {
+            padding: 10px;
+            font-size: 15px;
+            margin-bottom: 12px;
+            width: 250px;
+            border-radius: 6px;
+            border: none;
+            background-color: #111;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e2e2e2;
+        }
+        label {
+            font-size: 13px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: -5px 0 15px 0;
+        }
+        #error {
+            color: #ff4d4d;
+            margin-top: 10px;
+        }
+        iframe {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-box">
+        <img src="Diseño sin título (1).svg" alt="Logo Win">
+        <h2>👋 Bienvenido al dashboard de Win ✨</h2>
+        <input type="password" id="password" placeholder="Contraseña">
+        <div class="checkbox-group">
+            <input type="checkbox" id="showPass" onclick="togglePassword()"> <label for="showPass">Mostrar contraseña</label>
+        </div>
+        <button onclick="login()">Ingresar</button>
+        <div id="error"></div>
+    </div>
+
+    <iframe id="dashboard" src="https://app.powerbi.com/view?r=eyJrIjoiODRlM2Y2NTQtYjZlZC00Y2M1LThkNTUtYzkzYjdiYWRhMjQ3IiwidCI6ImRlMmJkZGZmLWZkMGItNDRjYS04ZmYwLTYyNjEwY2Y0ZWUzNiIsImMiOjR9"></iframe>
+
+    <script>
+        const PASSWORD = "winxreset";
+        const EXPIRE_TIME = 10 * 60 * 1000; // 10 minutos
+
+        function togglePassword() {
+            const input = document.getElementById("password");
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        function login() {
+            const pass = document.getElementById("password").value.trim();
+            if (pass === PASSWORD) {
+                const now = new Date().getTime();
+                localStorage.setItem("win_login", JSON.stringify({ pass, time: now }));
+                showDashboard();
+            } else {
+                document.getElementById("error").textContent = "Contraseña incorrecta.";
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById("login-box").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+        }
+
+        window.onload = () => {
+            const data = JSON.parse(localStorage.getItem("win_login"));
+            const now = new Date().getTime();
+            if (data && data.pass === PASSWORD && (now - data.time) < EXPIRE_TIME) {
+                showDashboard();
+            } else {
+                localStorage.removeItem("win_login");
+            }
+        };
+    </script>
+</body>
+</html>
